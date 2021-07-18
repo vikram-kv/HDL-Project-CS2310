@@ -1,0 +1,16 @@
+/*-----------------------------------------
+* CHIP NAME: Computer
+* INPUT: reset
+* OUTPUT: <none>
+* FUNCTION:CPU executes the instructions stored in ROM and data is stored in memory
+*-----------------------------------------*/
+
+CHIP Computer {
+
+    IN reset;
+
+    PARTS:
+	ROM32K(address=pc,out=instruction);
+	Memory(in=outM,load=writeM,address=addressM,out=inM);
+	CPU(instruction=instruction,reset=reset,inM=inM,outM=outM,addressM=addressM,writeM=writeM,pc=pc);
+}

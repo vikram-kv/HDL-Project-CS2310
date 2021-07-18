@@ -1,0 +1,14 @@
+/*******
+* CHIP NAME: Orf5
+* INPUT: a,b,c,d,e
+* OUTPUT: out
+* FUNCTION: if a=b=c=d=e=0 out=0 else out=1
+*****/
+
+CHIP Orf5 {
+	IN a,b,c,d,e;
+	OUT out;
+PARTS:
+	Orf3(a=a,b=b,c=c,out=temp);
+	Orf3(a=temp,b=d,c=e,out=out);
+}

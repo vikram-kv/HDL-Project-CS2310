@@ -1,0 +1,37 @@
+/**********
+* CHIP Name: mCLA4Bit- Adder based on modified Carry Look-Ahead Logic with pre-generated propagate and generate bits as input
+* INPUTS: p[4],g[4],carryin
+* OUTPUTS: sum[4],c3
+* FUNCTION: Uses c(i+1)=p(i)c(i)+g(i) for i=0,1,2 to get each internal c(i) in terms of propagate bits, generate bits and c0.
+*           Finally, sum(i)=c(i) Xor p(i) for i=0,1,2,3.
+*           c3 is also an OUT Pin as it might be needed to detect overflow.
+*           c0  is carryin and c4 is not generated again as it was generated using Higher Order terms.
+**********/
+
+CHIP mCLA4Bit
+{
+	IN p[4],g[4],carryin;
+	OUT sum[4],c3;
+PARTS:
+	//Computes c1 = p0.c0 + g0
+	And(a=p[0],b=carryin,out=p0c0);
+	Or(a=p0c0,b=g[0],out=c1);
+
+	//Computes c2 = p1.p0.c0 + p1.g1 + g2
+	Andf3(a=p[1],b=p[0],c=carryin,out=p1p0c0);
+	And(a=p[1],b=g[0],out=p1g0);
+	Orf3(a=p1p0c0,b=p1g0,c=g[1],out=c2);
+
+	//Computes c3 = p2.p1.p0.c0 + p2.p1.g0 + p2.g1+g2
+	Andf4(a=p[2],b=p[1],c=p[0],d=carryin,out=p2p1p0c0);
+	Andf3(a=p[2],b=p[1],c=g[0],out=p2p1g0);
+	And(a=p[2],b=g[1],out=p2g1);
+	Orf4(a=p2p1p0c0,b=p2p1g0,c=p2g1,d=g[2],out=tempc3);
+	Or(a=tempc3,b=tempc3,out=c3);
+
+	//Computes all sum bits
+	Xor(a=p[0],b=carryin,out=sum[0]);
+	Xor(a=p[1],b=c1,out=sum[1]);
+	Xor(a=p[2],b=c2,out=sum[2]);
+	Xor(a=p[3],b=tempc3,out=sum[3]);
+}

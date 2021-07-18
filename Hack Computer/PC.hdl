@@ -1,0 +1,20 @@
+/*-----------------------------------------
+* CHIP NAME: PC
+* INPUT: Aout[16],load,reset
+* OUTPUT: out[16]
+* FUNCTION: program counter:- 
+            if reset==1 set the pointer to 0
+            else if load==1(jump statement) load the value from A register(Aout)
+            else increment the pointer by 1
+*-----------------------------------------*/
+
+CHIP PC {
+    IN Aout[16],load,reset;
+    OUT out[16];
+
+    PARTS:
+    Register(in=in, load=true, out=out, out=regValue);
+    uHCLA(x=regValue,y[1..15]=false,y[0]=true,signal=false,sum=adderOut);
+    Mux4Way16(a=adderOut, b=Aout, c=false, d=false, sel[1]=reset,sel[0]=load, out=in);
+
+}

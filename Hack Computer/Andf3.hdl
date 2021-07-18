@@ -1,0 +1,14 @@
+/*******
+* CHIP NAME: Andf3
+* INPUT: a,b,c
+* OUTPUT: out
+* FUNCTION: if a=b=c=1, out=1 else out=0
+*****/
+
+CHIP Andf3 {
+	IN a,b,c;
+	OUT out;
+PARTS:
+	And(a=a,b=b,out=temp);
+	And(a=temp,b=c,out=out);
+}

@@ -1,0 +1,48 @@
+/*******
+* CHIP NAME: InstructionDecoder
+* INPUT: instruction[16]
+* OUTPUT: fromInstruction, loadA, loadB, fromMemory,zx, nx, zy, ny, f, no, writeM
+* FUNCTION: Takes the instruction and generates control signals for all the functions:
+*       writing into registers, memory, ALU control signals
+*       loading value from ALU or from instruction for A-register
+*****/
+
+CHIP InstructionDecoder {
+
+    IN  instruction[16];
+    OUT fromInstruction, loadA, loadD, fromMemory,zx, nx, zy, ny, f, no, writeM;
+              
+    PARTS:
+
+    //fromInstruction == 1 if instruction is to store the instruction(address) ie. if I[15] ==0
+    Not(in=instruction[15],out=notI15);
+    Or(a=false, b=notI15, out=fromInstruction);
+    
+    //loadA == 1 if instruction is to write into A register 
+    //ie.if the destination of C-instruction is A or if it is and A-instruction
+    And(a=instruction[15], b=instruction[5], out=toA);  
+    Or(a=toA, b=notI15, out=loadA);
+ 
+    //loadD == 1 if instruction is to write into D register 
+    //ie.if destination of C-instruction is D
+    And(a=instruction[15], b=instruction[4], out=loadD);
+
+    //fromMemory == 1 if instruction is to select the data for operand from Memory ie.if a-bit == 1
+    //fromMemory==0 if operand is from A-register
+    And(a=instruction[15],b=instruction[12], out=fromMemory);
+
+    
+    //ALU operation with I[6..11] as the control signal
+    Or(a=false, b=instruction[11], out=zx);
+    Or(a=false,b=instruction[10], out=nx);
+    Or(a=false,b=instruction[9], out=zy);
+    Or(a=false, b=instruction[8], out=ny);
+    Or(a=false,b=instruction[7], out=f);
+    Or(a=false, b=instruction[6], out=no);
+    
+    //writeM == 1 if the destination of the C instruction is Memory
+    And(a=instruction[15], b=instruction[3], out=writeM);    
+     
+    
+    
+}

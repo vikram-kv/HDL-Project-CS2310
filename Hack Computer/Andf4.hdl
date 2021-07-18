@@ -1,0 +1,15 @@
+/*******
+* CHIP NAME: And4
+* INPUT: a,b,c,d
+* OUTPUT: out
+* FUNCTION: if a=b=c=d=1 out=1 else out=0
+*****/
+
+CHIP Andf4 {
+	IN a,b,c,d;
+	OUT out;
+PARTS:
+	And(a=a,b=b,out=temp1);
+	And(a=c,b=d,out=temp2);
+	And(a=temp1,b=temp2,out=out);
+}

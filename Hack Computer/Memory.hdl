@@ -1,0 +1,16 @@
+/*-----------------------------------------
+* CHIP NAME: Memory
+* INPUT: in[16],load,address[6]
+* OUTPUT: out[16]
+* FUNCTION: contains the RAM
+            if load==1 the value from in is stored at address in RAM
+            if load==0 out = the data in RAM at address
+*-----------------------------------------*/
+
+CHIP Memory {
+    IN in[16], load, address[6];
+    OUT out[16];
+
+    PARTS:
+    RAM64(in=in, load=load, address=address, out=out);
+}

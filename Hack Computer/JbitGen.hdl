@@ -1,0 +1,54 @@
+/*CHIP NAME: JbitGen
+* INPUT: c, i[3], zr, ng
+* OUTPUT: out
+* FUNCTION: Calculates if a jump has to be made(out=1) if
+*               Instruction is a C-instruction(c=1)
+*               And if zr(res=0 from ALU) and ng(res<0 from ALU) meet any jump criterion
+*               i[3] are j2,j1,j0 bits in the instruction to CPU
+*/
+CHIP JbitGen {
+    IN c, i[3], zr, ng;
+    OUT out;
+    
+    PARTS:    
+    
+    //finding the complement for the bits
+    Not(in=i[2], out=ni2);
+    Not(in=i[1], out=ni1);
+    Not(in=i[0], out=ni0);
+    Not(in=zr, out=nzr);
+    Not(in=ng, out=nng);
+    
+    //JMP
+    Andf3(a=i[2],b=i[1], c=i[0], out=t1);
+    
+    //JGT
+    Andf5(a=ni2, b=ni1, c=i[0], d=nzr, e=nng, out=t2);
+    
+    //JEQ
+    Andf4(a=ni2, b=i[1],c=ni0, d= zr, out=t3);
+    
+    //JLT
+    Andf4(a=i[2],b=ni1, c=ni0, d=ng, out=t4);
+    
+    //JGE
+    Andf4(a=ni2, b=i[1], c=i[0], d=nng, out=t5);
+  
+    //JLE 
+    Or(a=ng,b=zr,out=le);
+    Andf4(a=i[2], b=i[1], c=ni0, d=le, out=t6);
+    
+    //JNE
+    Andf4(a=i[2], b=ni1, c=i[0], d=nzr, out=t7);
+    
+    //If any of the above terms is 1
+    Orf3(a=t1,b=t2,c=t3, out=temp1);
+    Orf4(a=t4,b=t5,c=t6, d=t7, out=temp2);
+    Or(a=temp1, b=temp2, out=temp);
+    
+    //If the instruction is a C-instruction
+    And(a=temp, b=c, out=out);
+    
+    
+    
+}

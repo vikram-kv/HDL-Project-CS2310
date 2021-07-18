@@ -1,0 +1,34 @@
+/***
+* CHIP Name: HCLA16Bit - Performs Addition using 4 Bit mCLA units with Higher Order propagate and generate terms.
+* INPUT: 16 Bit summands - a and b , carryin - c0 (carry into the LSB)
+* OUTPUT: 16 Bit result - sum , c15 - carry into MSB and c16 - carry out of MSB
+* FUNCTION: Generates higher order propagate and generate terms and uses them to find c(4i) for i=1,2,3,4 and feed these
+*           carries into the modified CLA chips(modified as they dont need to generate L0 p and g terms as they have already been generated).
+***/ 
+
+
+
+CHIP HCLA16Bit
+{
+	IN a[16],b[16],carryin;
+	OUT sum[16],c15,c16;
+PARTS:
+	//Generates Propagate and generate bits for the summands taken 4 bits at a time
+	//For example,L0PropBus1 is a 4 Bit Bus with p3p2p1p0 and L0GenBus1 is a 4 Bit Bus with g3g2g1g0
+	//where p(i) and g(i) are the propagate and generate terms for the ith bit of a and b
+	PropGeneBitGen(x=a[0..3],y=b[0..3],p=L0PropBus1,g=L0GenBus1);
+	PropGeneBitGen(x=a[4..7],y=b[4..7],p=L0PropBus2,g=L0GenBus2);
+	PropGeneBitGen(x=a[8..11],y=b[8..11],p=L0PropBus3,g=L0GenBus3);
+	PropGeneBitGen(x=a[12..15],y=b[12..15],p=L0PropBus4,g=L0GenBus4);
+
+	//This chip generates Higher Level Propagate and generate  terms and gives c4,c8,c12,c16 as output
+	HOCarryGen(c0=carryin,p[0..3]=L0PropBus1,g[0..3]=L0GenBus1,p[4..7]=L0PropBus2,g[4..7]=L0GenBus2,p[8..11]=L0PropBus3,g[8..11]=L0GenBus3,p[12..15]=L0PropBus4,g[12..15]=L0GenBus4,c4=c4,c8=c8,c12=c12,c16=c16);
+
+	//The mCLA4Bit chip is similar to a 4Bit CLA adder except that it doesnt generate L0 propagate and generate terms again
+	//It uses the terms as available in the respective 4Bit L0Buses
+	mCLA4Bit(p=L0PropBus1,g=L0GenBus1,carryin=carryin,sum=sum[0..3]);
+	mCLA4Bit(p=L0PropBus2,g=L0GenBus2,carryin=c4,sum=sum[4..7]);
+	mCLA4Bit(p=L0PropBus3,g=L0GenBus3,carryin=c8,sum=sum[8..11]);
+	mCLA4Bit(p=L0PropBus4,g=L0GenBus4,carryin=c12,sum=sum[12..15],c3=c15);
+
+}

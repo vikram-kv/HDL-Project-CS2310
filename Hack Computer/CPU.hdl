@@ -1,0 +1,52 @@
+/*-----------------------------------------
+* CHIP NAME: CPU
+* INPUT: inM[16],instruction[16],reset
+* OUTPUT: outM[16],writeM,addressM[6],pc[16]
+* FUNCTION: Processes the data by fetching instruction,decoding it and performing the required operations.
+*-----------------------------------------*/
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M if value=1, else ignore
+        addressM[6],    // Address to data memory (of M)
+        pc[15];          // address of next instruction in program-counter
+
+    PARTS:
+    InstructionDecoder(instruction=instruction, fromInstruction=fromInstruction, loadA=loadA, loadD=loadD, fromMemory=fromMemory,zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no,  writeM=writeM);
+    
+    //storing the instruction(address) if I[15] ==0, else a output from ALU
+    Mux16(a=ALUout, b=instruction, sel=fromInstruction, out=Ain);
+    
+    //writing into A register if the destination of C-instruction is A
+    //or if it is and A-instruction
+    ARegister(in=Ain, load=loadA, out=Aout);
+    
+    //writing into D register if destination of C-instruction is D
+    //D register gives the operand x
+    DRegister(in=ALUout, load=loadD, out=x);
+    
+    //selecting the data for operand from Memory if a-bit == 1, else from A-register
+    Mux16(a=Aout, b=inM, sel=fromMemory, out=y);
+    
+    //ALU operation 
+    //control signals from instruction decoder
+    HackALU(x=x, y=y,zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, zr=zr, ng=ng, out=ALUout);
+    
+    //if the destination of the C instruction is Memory
+    //the A register stores the destination address with extra zeros at the beginning
+    Or16(a=Aout,b=false,out[0..5]=addressM);
+
+    //the data to be stored in Memory
+    Or16(a=ALUout,b=false,out=outM);
+    //calculating if the address in A must be loaded into PC
+    //ie. if the jump must be made
+    JbitGen(c=instruction[15], i=instruction[0..2], zr=zr, ng=ng, out=Jbit);
+    PC(Aout=Aout, load=Jbit, reset=reset, out[0..14] = pc);
+}

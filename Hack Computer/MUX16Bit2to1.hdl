@@ -1,0 +1,30 @@
+/*-----------------------------------------
+* CHIP NAME: MUX16Bit2to1
+* INPUT: a[16], b[16],s
+* OUTPUT: out[16]
+* FUNCTION: out=a if s=0
+            out=b if s=1
+* CUSTOM CHIPS: And16v1  (performs AND operation of b with every bit of a)
+                Or16Bit  (performs Bitwise OR operation of two 16 bit numbers)
+*-----------------------------------------*/
+
+CHIP MUX16Bit2to1
+{
+      IN a[16], b[16],s ;
+      OUT out[16] ;
+
+      PARTS:
+
+//-----------------------------------------
+//not of s
+      Not(in=s, out=Ns);
+
+//-----------------------------------------
+//calculating terms of output
+      And16v1(a=a, b=Ns,out=outt0);
+      And16v1(a=b, b=s,out=outt1);
+
+//-----------------------------------------
+//output    
+      Or16Bit(a=outt0, b=outt1, out=out);
+}

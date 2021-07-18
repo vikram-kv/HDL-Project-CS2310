@@ -1,0 +1,19 @@
+/***
+* CHIP Name : sHCLA - Performs Addition/Subtraction on 16 Bit signed operands using 4 Bit CLA adders with HO terms
+* INPUT : Operands - x[16] and y[16] , signal - 0 for ADD and 1 for SUB
+* OUTPUT : Result - sum[16] and overflow - 1 if there is overflow
+* COMMENT : Overflow = c15 Xor c16 and subtraction is done by feeding 1 as c0
+*           to the adder with summands as x and the 1's complement of y.
+***/
+
+CHIP sHCLA {
+	IN x[16],y[16],signal;
+	OUT sum[16],overflow;
+PARTS:
+	//yXors is 1's complement of y if s=1(SUB)
+	Xor16Bit(in=y,value=signal,out=yXors);
+	//carryin(c0) is 1 if s=1(SUB)
+	HCLA16Bit(a=x,b=yXors,carryin=signal,sum=sum,c15=c15,c16=c16);
+	//Detection of overflow
+	Xor(a=c15,b=c16,out=overflow);
+}

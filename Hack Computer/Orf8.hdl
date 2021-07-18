@@ -1,0 +1,17 @@
+/*
+* Chip Name : Orf8
+* Inputs   	: in[8]	
+* Outputs   : out
+* Function 	: out = Or of all bits of in
+* Comments  : out=0 only when all bits of in are 0
+*/
+
+CHIP Orf8{
+	IN in[8];
+	OUT out;
+	
+	PARTS:
+	Orf4(a=in[0],b=in[1],c=in[2],d=in[3], out=t1);
+	Orf4(a=in[4],b=in[5],c=in[6],d=in[7], out=t2);
+	Or(a=t1,b=t2,out=out);
+	}

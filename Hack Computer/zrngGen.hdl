@@ -1,0 +1,22 @@
+/*******
+* CHIP NAME: zrngGen 
+* INPUT: in[16]
+* OUTPUT: zr, ng
+* COMMENTS : zr = 1 if in=0, else 0
+* 			ng = 1 if in is <0 else 0
+*/
+
+CHIP zrngGen{
+	IN in[16];
+	OUT zr, ng;
+
+	PARTS:
+	And(a=true, b=in[15], out=ng);
+
+	Orf8(in=in[0..7], out=t1);
+	Orf8(in=in[8..15], out=t2);
+	Or(a=t1, b=t2, out=Notzr);
+
+	Not(in=Notzr, out=zr);
+
+} 
