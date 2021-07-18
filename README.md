@@ -8,4 +8,4 @@ Building a Modern Computer from First Principles](https://mitpress.mit.edu/books
 
 # Test Instances
 
-The test cases for the Hack Computer is given under *Test Cases* in the *Hack Computer* folder. All tools required for running are available in the nand2tetris software package and need a Java Run-time Environment to function. A thorough reading of the book given above is suggested examining this project.
+The test cases for the Hack Computer are given under *Test Cases* in the *Hack Computer* folder. All tools required for running are available in the nand2tetris software package and need a Java Run-time Environment to function. A thorough reading of the book given above is suggested examining this project.
