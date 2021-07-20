@@ -1,4 +1,5 @@
 # HDL-Projects-CS2310
+### Group members - K.V. Vikram (CS19B021), A.R.Arun (CS19B002),  Samuel Moses (CS19B003)
 ### Hack ALU and Hack Computer are described using the beginner's HDL nand2tetris. The software is open-source and is available [here](https://www.nand2tetris.org/).
 
 This project was done as part of the lab course _CS2310 - Foundatons of Computer Systems Design Lab_ in the Jul - Nov 2020 Semester under Dr. C. Chandra Sekhar.
